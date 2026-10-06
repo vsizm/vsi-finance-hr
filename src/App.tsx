@@ -19,7 +19,7 @@ import {
   X,
 } from 'lucide-react';
 
-type User = { userId: string; email?: string; name?: string; role?: string };
+type User = { userId: string; username?: string; email?: string; name?: string; role?: string };
 type Employee = {
   id: string;
   employeeNo: string;
@@ -119,8 +119,8 @@ export default function App() {
   if (!user)
     return (
       <Login
-        onLogin={async (email,password) => {
-          const r = await auth.signIn(email,password);
+        onLogin={async (username,password) => {
+          const r = await auth.signIn(username,password);
           setUser(r.user as User);
           await load();
         }}
@@ -208,7 +208,7 @@ export default function App() {
           <div className="headerRight">
             <span className="statusDot" /> System operational{' '}
             <div className="avatar">
-              {(user.name || user.email || 'V').slice(0, 1).toUpperCase()}
+              {(user.name || user.username || 'V').slice(0, 1).toUpperCase()}
             </div>
           </div>
         </header>
@@ -262,12 +262,12 @@ export default function App() {
   );
 }
 
-function Login({ onLogin }: { onLogin: (email:string,password:string)=>Promise<void> }) {
-  const [email,setEmail]=useState('');
+function Login({ onLogin }: { onLogin: (username:string,password:string)=>Promise<void> }) {
+  const [username,setUsername]=useState('');
   const [password,setPassword]=useState('');
   const [busy,setBusy]=useState(false);
   const [message,setMessage]=useState('');
-  return <div className="login"><div className="loginCard"><div className="brandmark large">VSI</div><p className="eyebrow">VISIONARY STUDENTS INITIATIVE</p><h1>Finance & HR Management</h1><p>One secure workspace for people, finance, approvals and organisational reporting.</p><form className="formGrid" onSubmit={async e=>{e.preventDefault();setMessage('');setBusy(true);try{await onLogin(email,password)}catch(err:any){setMessage(err?.message||'Unable to sign in.')}finally{setBusy(false)}}}><label className="wide">Email<input type="email" required value={email} onChange={e=>setEmail(e.target.value)} autoComplete="username"/></label><label className="wide">Password<input type="password" required value={password} onChange={e=>setPassword(e.target.value)} autoComplete="current-password"/></label>{message&&<div className="alert wide">{message}</div>}<button className="primary full wide" disabled={busy}>{busy?'Signing in…':'Sign in securely'}</button></form><small>Access is restricted to authorised VSI users.</small></div></div>;
+  return <div className="login"><div className="loginCard"><div className="brandmark large">VSI</div><p className="eyebrow">VISIONARY STUDENTS INITIATIVE</p><h1>Finance & HR Management</h1><p>One secure workspace for people, finance, approvals and organisational reporting.</p><form className="formGrid" onSubmit={async e=>{e.preventDefault();setMessage('');setBusy(true);try{await onLogin(username,password)}catch(err:any){setMessage(err?.message||'Unable to sign in.')}finally{setBusy(false)}}}><label className="wide">Username<input type="text" required value={username} onChange={e=>setUsername(e.target.value)} autoComplete="username" autoCapitalize="none" spellCheck={false}/></label><label className="wide">Password<input type="password" required value={password} onChange={e=>setPassword(e.target.value)} autoComplete="current-password"/></label>{message&&<div className="alert wide">{message}</div>}<button className="primary full wide" disabled={busy}>{busy?'Signing in…':'Sign in securely'}</button></form><small>Access is restricted to authorised VSI users.</small></div></div>;
 }
 
 function Dashboard({
