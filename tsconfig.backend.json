@@ -9,7 +9,8 @@
     "rootDir": "backend",
     "strict": false,
     "skipLibCheck": true,
-    "esModuleInterop": true
+    "esModuleInterop": true,
+    "noEmitOnError": false
   },
   "include": ["backend/index.ts"]
 }
