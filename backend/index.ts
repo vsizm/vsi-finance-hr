@@ -2,7 +2,14 @@ import { neon } from '@neondatabase/serverless';
 import { jwtVerify, SignJWT } from 'jose';
 import bcrypt from 'bcryptjs';
 
-const sql = neon(process.env.DATABASE_URL!);
+let sql: ReturnType<typeof neon> | null = null;
+function getSql(){
+  if(sql)return sql;
+  const url=process.env.DATABASE_URL;
+  if(!url)throw new Error('DATABASE_URL is not configured for this deployment.');
+  sql=neon(url);
+  return sql;
+}
 const enc = new TextEncoder();
 const secret = () => enc.encode(process.env.AUTH_SECRET || 'CHANGE_ME_AUTH_SECRET');
 
@@ -17,11 +24,11 @@ async function sessionUser(req:Request){const token=cookies(req).vsi_session;if(
 const requireAuth=()=>async(ctx:Ctx)=>{const u=await sessionUser(ctx.req);if(!u)throw new HttpErr('Authentication required.',401);ctx.user=u;};
 async function signIn(user:any){return await new SignJWT({username:user.username||'',email:user.email||'',name:user.name||''}).setProtectedHeader({alg:'HS256'}).setSubject(String(user.userId)).setIssuedAt().setExpirationTime('8h').sign(secret());}
 const db={
-  async list<T=any>(table:string,opts:any={}){const lim=Math.min(Number(opts.limit||100),1000);const r=await sql`select id, record from app_records where table_name=${table} order by created_at asc limit ${lim}`;return {items:r.map((x:any)=>({id:x.id,...x.record})) as T[]};},
-  async add(table:string,records:any[]){const ids:string[]=[];for(const record of records){const id=record.id||crypto.randomUUID();const copy={...record};delete copy.id;await sql`insert into app_records(id,table_name,record) values(${id},${table},${JSON.stringify(copy)}::jsonb)`;ids.push(id);}return ids;},
-  async get<T=any>(table:string,ids:any[]|string){const list=Array.isArray(ids)?ids:[ids];const r=await sql`select id, record from app_records where table_name=${table} and id = any(${list})`;return r.map((x:any)=>({id:x.id,...x.record})) as T[];},
-  async update(table:string,items:any[]){const out:any[]=[];for(const item of items){const record={...(item.record||{})};delete record.id;const r=await sql`update app_records set record=${JSON.stringify(record)}::jsonb, updated_at=now() where table_name=${table} and id=${item.id} returning id`;out.push(r[0]||null);}return out;},
-  async delete(table:string,ids:string[]){await sql`delete from app_records where table_name=${table} and id = any(${ids})`;}
+  async list<T=any>(table:string,opts:any={}){const lim=Math.min(Number(opts.limit||100),1000);const r=await getSql()`select id, record from app_records where table_name=${table} order by created_at asc limit ${lim}`;return {items:r.map((x:any)=>({id:x.id,...x.record})) as T[]};},
+  async add(table:string,records:any[]){const ids:string[]=[];for(const record of records){const id=record.id||crypto.randomUUID();const copy={...record};delete copy.id;await getSql()`insert into app_records(id,table_name,record) values(${id},${table},${JSON.stringify(copy)}::jsonb)`;ids.push(id);}return ids;},
+  async get<T=any>(table:string,ids:any[]|string){const list=Array.isArray(ids)?ids:[ids];const r=await getSql()`select id, record from app_records where table_name=${table} and id = any(${list})`;return r.map((x:any)=>({id:x.id,...x.record})) as T[];},
+  async update(table:string,items:any[]){const out:any[]=[];for(const item of items){const record={...(item.record||{})};delete record.id;const r=await getSql()`update app_records set record=${JSON.stringify(record)}::jsonb, updated_at=now() where table_name=${table} and id=${item.id} returning id`;out.push(r[0]||null);}return out;},
+  async delete(table:string,ids:string[]){await getSql()`delete from app_records where table_name=${table} and id = any(${ids})`;}
 };
 
 
