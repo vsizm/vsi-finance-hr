@@ -12,7 +12,9 @@
     "lucide-react": "^0.469.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
-    "@neondatabase/serverless": "^1.0.1"
+    "@neondatabase/serverless": "^1.0.1",
+    "bcryptjs": "^2.4.3",
+    "jose": "^6.1.0"
   },
   "devDependencies": {
     "@types/react": "^19.0.0",
