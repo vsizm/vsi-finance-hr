@@ -6,7 +6,7 @@
     "api/auth.ts": {
       "includeFiles": "backend-dist/**"
     },
-    "api/[...path].ts": {
+    "api/index.ts": {
       "includeFiles": "backend-dist/**"
     }
   },
@@ -22,6 +22,10 @@
     {
       "source": "/api/auth/logout",
       "destination": "/api/auth"
+    },
+    {
+      "source": "/api/:path*",
+      "destination": "/api/index"
     }
   ]
 }
