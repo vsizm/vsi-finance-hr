@@ -35,7 +35,7 @@ const db={
 type Employee={employeeNo:string;name:string;department:string;position:string;employmentType:string;status:string;email:string;phone:string;startDate:string;salary:number;annualLeaveEntitlement:number;createdAt:string;createdBy:string};
 type Finance={date:string;type:string;category:string;description:string;amount:number;status:string;submittedBy:string;submittedById:string;approvedBy?:string;createdAt:string};
 type Leave={employeeId:string;employeeName:string;type:string;startDate:string;endDate:string;days:number;reason:string;status:string;submittedBy:string;createdAt:string};
-type UserRecord={username:string;email?:string;name?:string;role:string;createdAt:string};
+type UserRecord={userId:string;username:string;email?:string;name?:string;role:string;createdAt:string};
 const now=()=>new Date().toISOString();
 async function list<T>(table:string){return (await db.list<T>(table,{limit:1000})).items;}
 async function findUser(userId:string){return (await list<UserRecord>('users')).find(u=>(u as any).userId===userId);}
