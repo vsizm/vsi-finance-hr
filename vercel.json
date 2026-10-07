@@ -5,6 +5,9 @@
   "functions": {
     "api/auth.ts": {
       "includeFiles": "backend-dist/**"
+    },
+    "api/[...path].ts": {
+      "includeFiles": "backend-dist/**"
     }
   },
   "rewrites": [
