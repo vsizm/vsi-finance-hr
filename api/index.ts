@@ -1,3 +1,3 @@
-import handler from '../backend/index';
+import handler from '../backend-dist/index.js';
 
 export default handler;
