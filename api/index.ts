@@ -1,3 +1,5 @@
 import handler from '../backend-dist/index.js';
 
-export default handler;
+export default async function api(request: Request) {
+  return handler(request);
+}
